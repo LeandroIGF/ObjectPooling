@@ -44,6 +44,8 @@ TScriptInterface<IObjectPoolInterface> UObjectPoolSubsystem::GetObjectFromPool(T
 
 	FObjectPool* PoolObject = ObjectPoolMap.Find(ClassPool);
 
+	//ObjectPoolMap.FindOrAdd()
+
 	TScriptInterface<IObjectPoolInterface> ActorToReturn;
 
 	// We control that the pool is not empty
@@ -81,6 +83,22 @@ void UObjectPoolSubsystem::ReturnObjectToPool(TSubclassOf<AActor> ClassPool, TSc
 	{
 		return;
 	}
+
+	if (ActorToReturn.GetObject()->GetClass()->ImplementsInterface(UObjectPoolInterface::StaticClass()))
+	{
+
+	}
+
+	FObjectPoolActivationData Data;
+	if (ActorToReturn.GetInterface())
+	{
+		ActorToReturn.GetInterface()->Deactivate();
+	}
+	else
+	{
+		IObjectPoolInterface::Execute_BP_Deactivate(ActorToReturn.GetObject());
+	}
+	
 
 	FObjectPool* PoolObject = ObjectPoolMap.Find(ClassPool);
 

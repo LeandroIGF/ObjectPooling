@@ -10,6 +10,12 @@ void UObjectPoolSubsystem::AddPool(TSubclassOf<AActor> ClassPool, int32 InitialS
 	{
 		return;
 	}
+
+	if (!ClassPool->ImplementsInterface(UObjectPoolInterface::StaticClass()))
+	{
+		return;
+	}
+
 	FObjectPool ObjectPoolToCreate;
 
 	// Se vogliamo aggiungere piu' parametri per lo spawn
@@ -38,6 +44,11 @@ TScriptInterface<IObjectPoolInterface> UObjectPoolSubsystem::GetObjectFromPool(T
 	}
 
 	if (!ObjectPoolMap.Contains(ClassPool))
+	{
+		return nullptr;
+	}
+
+	if (!ClassPool->ImplementsInterface(UObjectPoolInterface::StaticClass()))
 	{
 		return nullptr;
 	}
@@ -84,11 +95,27 @@ void UObjectPoolSubsystem::ReturnObjectToPool(TSubclassOf<AActor> ClassPool, TSc
 		return;
 	}
 
+	if (!ActorToReturn.GetObject()->GetClass()->ImplementsInterface(UObjectPoolInterface::StaticClass()))
+	{
+		return;
+	}
+
+	// Deactivate object pool
+	if (ActorToReturn.GetInterface())
+	{
+		ActorToReturn.GetInterface()->Deactivate();
+	}
+	else
+	{
+		IObjectPoolInterface::Execute_BP_Deactivate(ActorToReturn.GetObject());
+	}
+	
+	// We get the object pool with our pool objects
 	FObjectPool* PoolObject = ObjectPoolMap.Find(ClassPool);
 
 	if (!PoolObject->ActivePoolingObjects.Contains(ActorToReturn))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Trying to add to the pool an object that wasn't registered before"))
+		UE_LOG(LogTemp, Warning, TEXT("Trying to add to the pool an object that wasn't registered before"));
 	}
 
 	// unregister from active objects

@@ -46,7 +46,7 @@ public:
 	/* Functions to call in c++, if the interface is implemented in the class*/
 
 	//Active version to call in c++
-	void Activate(FObjectPoolActivationData ObjectPoolData) { NativeActivate(ObjectPoolData); };
+	void Active(FObjectPoolActivationData ObjectPoolData) { NativeActive(ObjectPoolData); };
 
 	//Deactive version to call in c++
 	void Deactivate() { NativeDeactive(); }
@@ -58,29 +58,16 @@ public:
 	void BP_Activate(FObjectPoolActivationData ObjectPoolData);
 
 	// Active to implement in c++
-	virtual void NativeActivate(FObjectPoolActivationData ObjectPoolData)
-	{
-		UObject* Object = Cast<UObject>(this);
-
-		if (IsValid(Object))
-		{
-			Execute_BP_Activate(Object, ObjectPoolData);
-		}		
-	};
+	virtual void NativeActive(FObjectPoolActivationData ObjectPoolData) { BP_Activate( ObjectPoolData); };
 
 	// Deactive to implement in blueprint
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Object Pool Interface")
 	void BP_Deactivate();
 
 	// Deactive to implemente in c++
-	virtual void NativeDeactive()
-	{
+	virtual void NativeDeactive() {
 		UObject* Object = Cast<UObject>(this);
-
-		if (IsValid(Object))
-		{
-			Execute_BP_Deactivate(Object);
-		}		
+		Execute_BP_Deactivate(Object);
 	};
 
 	//TODO: control PURE_VIRTUAL()
