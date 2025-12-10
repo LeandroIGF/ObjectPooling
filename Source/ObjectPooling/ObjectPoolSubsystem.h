@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
+#include "ObjectPoolInterface.h"
 #include "ObjectPoolSubsystem.generated.h"
 
 /**
@@ -17,11 +18,11 @@ struct FObjectPool
 
 	// Array with the pointers of the USABLE objects IN this pool
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Object Pool Struct")
-	TArray<AActor*> UsablePoolingObjects;
+	TArray<TScriptInterface<IObjectPoolInterface>> UsablePoolingObjects;
 
 	// Array with the pointers of the ACTIVE IN SCENE objects FROM this pool
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Object Pool Struct")
-	TArray<AActor*> ActivePoolingObjects;
+	TArray<TScriptInterface<IObjectPoolInterface>> ActivePoolingObjects;
 
 };
 
@@ -40,8 +41,8 @@ public:
 	void AddPool(TSubclassOf<AActor> ClassPool, int32 InitialSize = 50);
 
 	UFUNCTION(BlueprintCallable, Category = "Object Pool SubSystem")
-	AActor* GetObjectFromPool(TSubclassOf<AActor> ClassPool);
+	TScriptInterface<IObjectPoolInterface> GetObjectFromPool(TSubclassOf<AActor> ClassPool);
 
 	UFUNCTION(BlueprintCallable, Category = "Object Pool SubSystem")
-	void ReturnObjectToPool(TSubclassOf<AActor> ClassPool, AActor* ActorToReturn);
+	void ReturnObjectToPool(TSubclassOf<AActor> ClassPool, TScriptInterface<IObjectPoolInterface> ActorToReturn);
 };
