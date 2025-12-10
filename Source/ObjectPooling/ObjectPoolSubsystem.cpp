@@ -8,6 +8,12 @@ void UObjectPoolSubsystem::AddPool(TSubclassOf<AActor> ClassPool, int32 InitialS
 {
 	if (!GetWorld())
 	{
+
+		UObjectPoolSubsystem* MySubsystem = GetWorld()->GetSubsystem<UObjectPoolSubsystem>();
+		if (MySubsystem)
+		{
+			//MySubsystem->AddPool();
+		}
 		return;
 	}
 
